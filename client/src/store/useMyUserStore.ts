@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 
 type UserState = {
-  myUser: { username: string; avatar: string } | null;
+  myUser: User | null;
 }
 
 type UserAction = {
-  setMyUser: (user: { username: string; avatar: string } | null) => void,
+  setMyUser: (user: User) => void,
   resetMyUser: () => void
 };
 

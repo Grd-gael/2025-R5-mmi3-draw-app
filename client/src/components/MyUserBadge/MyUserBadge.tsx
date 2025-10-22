@@ -1,9 +1,6 @@
-type Props = {
-  username: string;
-  avatar: string;
-}
 
-export const MyUserBadge = (myUser: Props) => {
+
+export const MyUserBadge = (myUser: User) => {
   return (
     <div className="my-user-badge badge badge-lg badge-primary badge-soft">
       <div className="avatar">

@@ -1,4 +1,5 @@
-type MyPlayer = {
+type User = {
   username: string;
-  avatar?: string;
+  avatar: string;
+  id: string;
 }
