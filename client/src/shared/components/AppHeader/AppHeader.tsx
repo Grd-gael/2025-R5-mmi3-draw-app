@@ -11,7 +11,7 @@ export function AppHeader({ onClickJoin }: AppHeaderProps) {
     <div className="join items-center justify-between gap-4 w-full">
       <h1 className="join-item text-5xl font-bold">MMI3 Draw App</h1>
       {myUser ?
-      <MyUserBadge username={myUser.username} avatar={myUser.avatar} />
+      <MyUserBadge {...myUser} />
         :
         <div className="join-item">
           <button className="btn btn-primary" onClick={onClickJoin}>Rejoindre</button>

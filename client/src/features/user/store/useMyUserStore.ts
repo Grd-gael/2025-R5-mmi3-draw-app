@@ -12,6 +12,6 @@ type UserAction = {
 
 export const useMyUserStore = create<UserState & UserAction>((set) => ({
   myUser: null,
-  setMyUser: (user) => set({ myUser: user }),
+  setMyUser: (user: User | null) => set({ myUser: user }),
   resetMyUser: () => set({ myUser: null }),
 }));
