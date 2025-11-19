@@ -1,9 +1,6 @@
-export type MyUserBadgeProps = {
-  username: string;
-  avatar: string;
-}
+import type { User } from "../../../../shared/types/user.type";
 
-export const MyUserBadge = (myUser: MyUserBadgeProps) => {
+export const MyUserBadge = (myUser: User) => {
   return (
     <div className="my-user-badge badge badge-lg badge-primary badge-soft">
       <div className="avatar">
