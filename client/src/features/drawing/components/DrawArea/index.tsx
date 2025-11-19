@@ -1,13 +1,17 @@
-import { useCallback, useRef, useEffect, type MouseEventHandler } from "react"
+import { useCallback, useRef, useMemo, useEffect, type MouseEventHandler } from "react"
 import style from "./DrawArea.module.css"
 import { getCoordinatesRelativeToElement } from "../../utils/getCanvasCoordinates";
+import { useMyUserStore } from "../../../user/store/useMyUserStore";
+import { SocketManager } from "../../../../shared/services/SocketManager";
+
+
 
 type Props = {
   strokes : string,
 }
 
 
-export const DrawArea = ( {strokes} : Props) => {
+export const DrawArea = ({strokes}:Props) => {
 
   const parentRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,28 +21,37 @@ export const DrawArea = ( {strokes} : Props) => {
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
     return getCoordinatesRelativeToElement(e.clientX, e.clientY, canvasRef.current);
   } 
+  const { myUser } = useMyUserStore();
+  const canUserDraw = useMemo(() => myUser !== null, [myUser]); 
+  
 
 
   const onMouseDown : MouseEventHandler<HTMLCanvasElement> = useCallback((e) =>{
     if (!canvasRef.current) return;
+    if (!canUserDraw) return; 
     console.log(e.clientX - canvasRef.current.offsetLeft, e.clientY - canvasRef.current.offsetTop)
     const contexte = canvasRef.current.getContext("2d");
     if (!contexte) return;
 
     const coordinates = getCanvasCoordinates(e);
+    SocketManager.emit('client:draw:start', { 
+      x: coordinates.x,
+      y: coordinates.y,
+      strokeWidth: 2,
+      color: 'black'
+    });
 
     contexte.beginPath();
     contexte.moveTo(coordinates.x, coordinates.y);
     contexte.lineTo(coordinates.x + 0.4, coordinates.y + 0.4);
     contexte.stroke();
 
-
     const onMouseMove = (e: MouseEvent) => {
       if (!canvasRef.current) return;
       if (!contexte) return;
 
 
-      const coordinates = getCanvasCoordinates(e);
+      const coordinates = getCanvasCoordinates(e as unknown as React.MouseEvent<HTMLCanvasElement>);
         contexte.lineTo(coordinates.x, coordinates.y);
         contexte.stroke();
       };
@@ -53,7 +66,7 @@ export const DrawArea = ( {strokes} : Props) => {
 
     canvasRef.current.addEventListener("mouseup", onMouseUp);
     canvasRef.current.addEventListener('mouseleave', onMouseUp)
-  }, [])
+  }, [canUserDraw])
 
   
   
