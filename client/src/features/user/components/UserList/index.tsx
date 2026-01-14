@@ -15,7 +15,10 @@ export function UserList({ users }: UserListProps){
         {users.length > 0 ? 
           users.map((user) => (
             <li className="list-row items-center" key={user.id}>
-              <div><img className="size-8 rounded-box" src={user.avatar} /></div>
+              <div className="relative">
+                <img className="size-8 rounded-box" src={user.avatar} />
+                <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">{user.username.charAt(0).toUpperCase()}</p>
+              </div>
               <div>
                 <div className="text-xs uppercase font-semibold">{user.username}</div>
               </div>

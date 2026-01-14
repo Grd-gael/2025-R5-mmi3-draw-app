@@ -2,6 +2,7 @@ import type { User } from "../../../../shared/types/user.type";
 
 export const MyUserBadge = (myUser: User) => {
   return (
+    
     <div className="my-user-badge badge badge-lg badge-primary badge-soft">
       <div className="avatar">
         <div className="w-4 rounded-full">

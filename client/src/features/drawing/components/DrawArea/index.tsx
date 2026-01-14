@@ -20,7 +20,7 @@ export const DrawArea = ({strokes, color, width, setCanva}:Props) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    setCanva(canvasRef.current!);
+  setCanva(canvasRef.current!);
   
   
   /** Pour récupérer les coordonnées d'un event en prenant en compte le placement de notre canvas */
