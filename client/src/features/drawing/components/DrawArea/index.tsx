@@ -9,10 +9,12 @@ import type { DrawStroke, Point } from "../../../../shared/types/drawing.type";
 
 type Props = {
   strokes : string,
+  color: string,
+  width: number
 }
 
 
-export const DrawArea = ({strokes}:Props) => {
+export const DrawArea = ({strokes, color, width}:Props) => {
   
   const parentRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,16 +30,20 @@ export const DrawArea = ({strokes}:Props) => {
   
   const drawLine  = useCallback((
     from: { x: number, y: number } | null, 
-    to: { x: number, y: number } 
+    to: { x: number, y: number } ,
+    color: string,
+    width: number
   ) => {
     if (!canvasRef.current) {
       return;
     }
+
     
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) {
       return;
     }
+    ctx.strokeStyle = color;
     
     
     if (from){
@@ -45,7 +51,7 @@ export const DrawArea = ({strokes}:Props) => {
       ctx.moveTo(from.x, from.y);
     }
     
-    ctx.lineWidth = 2;
+    ctx.lineWidth = width;
     ctx.lineTo(to.x, to.y);
     ctx.stroke();
     
@@ -73,30 +79,32 @@ export const DrawArea = ({strokes}:Props) => {
     const coordinates = getCanvasCoordinates(e);
     
     
-    drawLine(coordinates, {x: coordinates.x + 0.4, y: coordinates.y + 0.4});
+    drawLine(coordinates, {x: coordinates.x + 0.4, y: coordinates.y + 0.4}, color, width);
     
     const relativeCoord = relativeCoordinates(coordinates);
     
     SocketManager.emit('draw:start', { 
       x: relativeCoord.x,
       y: relativeCoord.y,
-      strokeWidth: 2,
-      color: 'black'
+      strokeWidth: width,
+      color: color
     });
 
     
     const onMouseMove = (e: MouseEvent) => {
       
       const coordinates = getCanvasCoordinates(e as unknown as React.MouseEvent<HTMLCanvasElement>);
-      drawLine(null, coordinates)
+      drawLine(null, coordinates, color, width);
 
 
       const relativeCoord = relativeCoordinates(coordinates);
       
       SocketManager.emit('draw:move', { 
         x: relativeCoord.x,
-        y: relativeCoord.y
-      });
+        y: relativeCoord.y,
+        color: color,
+        strokeWidth: width
+        });
     };
     
     
@@ -115,7 +123,7 @@ export const DrawArea = ({strokes}:Props) => {
     
     canvasRef.current.addEventListener("mouseup", onMouseUp);
     canvasRef.current.addEventListener('mouseleave', onMouseUp)
-  }, [canUserDraw])
+  }, [canUserDraw, color, width])
   
   
   
@@ -154,7 +162,7 @@ export const DrawArea = ({strokes}:Props) => {
   }
 
 
-  const drawOtherUserPoints = useCallback((socketId: string, points : Point[]) => {
+  const drawOtherUserPoints = useCallback((socketId: string, points : Point[], color: string, width: number) => {
 
     const previousPoints = otherUsersStrokes.current.get(socketId) || [];
 
@@ -163,25 +171,26 @@ export const DrawArea = ({strokes}:Props) => {
         return; /* On ne redessine pas les points déjà dessinés */
       }
 
-        const absolutePoint = absoluteCoordinates(point);
+        const absolutePoint = absoluteCoordinates({x: point.x, y: point.y});
 
         if (pointIndex === 0) {
-          drawLine(absolutePoint, absolutePoint);
+          drawLine(absolutePoint, absolutePoint, color, width);
         }
         else{
-          drawLine(absoluteCoordinates(points[pointIndex - 1]), absolutePoint);
+          drawLine(absoluteCoordinates(points[pointIndex - 1]), absolutePoint, color, width);
         }
         
       });
   }, []);
 
   const onOtherUserMove = useCallback((payload: DrawStroke) => {
-    drawOtherUserPoints(payload.socketId, payload.points);
+    console.log("DRAW MOVE RECEIVED", payload);
+    drawOtherUserPoints(payload.socketId, payload.points, payload.color, payload.strokeWidth);
   }, [drawOtherUserPoints]);
 
 
   const onOtherUserStart = useCallback((payload: DrawStroke) => {
-    drawOtherUserPoints(payload.socketId, payload.points);
+    drawOtherUserPoints(payload.socketId, payload.points, payload.color, payload.strokeWidth);
     otherUsersStrokes.current.set(payload.socketId, payload.points);
   }, []);
 
@@ -198,7 +207,7 @@ export const DrawArea = ({strokes}:Props) => {
         return;
       }
       data.strokes.forEach((stroke) => {
-        drawOtherUserPoints(stroke.socketId, stroke.points);
+        drawOtherUserPoints(stroke.socketId, stroke.points, stroke.color, stroke.strokeWidth);
       });
     });
   }, [drawOtherUserPoints]);

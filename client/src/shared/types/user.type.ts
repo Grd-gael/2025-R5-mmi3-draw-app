@@ -3,5 +3,6 @@ export type User =  {
   socketId: string;
   avatar: string;
   username: string;
+  color: string;
   hasJoined: boolean;
 }

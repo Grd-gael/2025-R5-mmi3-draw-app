@@ -9,6 +9,8 @@ export type DrawPoint = {
 export type Point = {
     x : number;
     y : number;
+    color: string;
+    strokeWidth: number;
 }
 
 export type DrawStroke = {

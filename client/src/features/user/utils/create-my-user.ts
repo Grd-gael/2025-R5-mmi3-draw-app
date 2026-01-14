@@ -38,6 +38,7 @@ export const createMyUser = () => {
   const { username, avatar } = DEFAULT_USERS[Math.floor(Math.random() * DEFAULT_USERS.length)];
   return {
     username,
-    avatar
+    avatar,
+    color: 'black',
   };
 }
