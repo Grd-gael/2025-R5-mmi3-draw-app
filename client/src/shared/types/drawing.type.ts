@@ -10,3 +10,11 @@ export type Point = {
     x : number;
     y : number;
 }
+
+export type DrawStroke = {
+    socketId: string;
+    points : Point[];
+    strokeWidth: number;
+    color: string;
+}
+
