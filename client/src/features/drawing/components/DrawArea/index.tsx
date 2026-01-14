@@ -10,14 +10,17 @@ import type { DrawStroke, Point } from "../../../../shared/types/drawing.type";
 type Props = {
   strokes : string,
   color: string,
-  width: number
+  width: number,
+  setCanva : (canva: HTMLCanvasElement) => void
 }
 
 
-export const DrawArea = ({strokes, color, width}:Props) => {
+export const DrawArea = ({strokes, color, width, setCanva}:Props) => {
   
   const parentRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    setCanva(canvasRef.current!);
   
   
   /** Pour récupérer les coordonnées d'un event en prenant en compte le placement de notre canvas */
@@ -258,11 +261,10 @@ export const DrawArea = ({strokes, color, width}:Props) => {
 
   useEffect(() => getAllStrokes(), [drawOtherUserPoints]);
   
-  
-  
+    
   return(
     <div ref={parentRef} className={style.drawArea}>
-    <canvas ref={canvasRef} className={`${style.drawArea__canvas} border-1`} width={"800"} height={"400"} onMouseDown={onMouseDown}/>
+    <canvas ref={canvasRef} id="mycanvas" className={`${style.drawArea__canvas} border-1`} width={"800"} height={"400"} onMouseDown={onMouseDown}/>
     </div>
   )
 }
